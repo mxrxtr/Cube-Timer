@@ -86,15 +86,34 @@
     font-size:1rem; font-weight:800; letter-spacing:0.14em;
     text-transform:uppercase; color:var(--text);
   }
-  .cube-logo {
-    width:36px; height:36px;
-    animation: cubeRotate 8s linear infinite;
-    transform-style: preserve-3d;
+  .cube-logo-3d {
+    width:32px; height:32px;
+    perspective:120px;
+    flex-shrink:0;
+  }
+  .cube3d {
+    width:20px; height:20px;
+    margin:6px;
+    position:relative;
+    transform-style:preserve-3d;
+    animation:cubeRotate 6s linear infinite;
   }
   @keyframes cubeRotate {
-    0%  { transform: rotateX(-20deg) rotateY(0deg); }
-    100%{ transform: rotateX(-20deg) rotateY(360deg); }
+    0%   { transform: rotateX(-25deg) rotateY(0deg); }
+    100% { transform: rotateX(-25deg) rotateY(360deg); }
   }
+  .face3d {
+    position:absolute;
+    width:20px; height:20px;
+    border:1.5px solid rgba(0,0,0,0.35);
+    box-sizing:border-box;
+  }
+  .face3d.front  { background:#C41E3A; transform:translateZ(10px); }
+  .face3d.back   { background:#FF5800; transform:rotateY(180deg) translateZ(10px); }
+  .face3d.top    { background:#FFD500; transform:rotateX(90deg) translateZ(10px); }
+  .face3d.bottom { background:#F5F5F0; transform:rotateX(-90deg) translateZ(10px); }
+  .face3d.right  { background:#003DA5; transform:rotateY(90deg) translateZ(10px); }
+  .face3d.left   { background:#009B48; transform:rotateY(-90deg) translateZ(10px); }
 
   .header-controls { display:flex; gap:10px; align-items:center; }
   .toggle-btn {
@@ -125,53 +144,34 @@
     min-height:calc(100vh - 66px);
   }
 
-  /* ── Scramble box ── */
+  /* scramble redesign – see below */
+  /* ── Scramble redesign ── */
   .scramble-box {
-    width:100%; max-width:640px;
+    width:100%; max-width:660px;
     background:var(--surface);
     border:1px solid var(--border);
     border-radius:6px;
-    padding:18px 48px 18px 24px;
+    padding:16px 18px;
     position:relative;
     overflow:hidden;
   }
-  /* Left face-color accent bar */
   .scramble-box::before {
     content:'';
     position:absolute; left:0; top:0; bottom:0; width:3px;
     background: linear-gradient(to bottom,
-      var(--white) 0%, var(--white) 16.6%,
-      var(--yellow) 16.6%, var(--yellow) 33.3%,
-      var(--red) 33.3%, var(--red) 50%,
-      var(--orange) 50%, var(--orange) 66.6%,
-      var(--blue) 66.6%, var(--blue) 83.3%,
-      var(--green) 83.3%, var(--green) 100%
+      var(--white) 0%,var(--white) 16.6%,
+      var(--yellow) 16.6%,var(--yellow) 33.3%,
+      var(--red) 33.3%,var(--red) 50%,
+      var(--orange) 50%,var(--orange) 66.6%,
+      var(--blue) 66.6%,var(--blue) 83.3%,
+      var(--green) 83.3%,var(--green) 100%
     );
   }
-  .scramble-label {
-    font-size:0.58rem; font-weight:700; letter-spacing:0.18em;
-    text-transform:uppercase; color:var(--muted);
-    margin-bottom:8px;
+  .scramble-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px;
   }
-  .scramble-moves span {
-    font-family:'JetBrains Mono',monospace;
-    font-size:1rem; font-weight:400;
-    display:inline-block; padding:2px 5px; margin:1px;
-    border-radius:3px;
-    transition: background .15s;
-  }
-  .scramble-moves span:hover { background:rgba(255,255,255,0.05); }
-
-  /* Face colors on moves — match real cube */
-  .scramble-moves span.move-U { color:var(--yellow); }
-  .scramble-moves span.move-D { color:var(--white); }
-  .scramble-moves span.move-R { color:var(--blue); }
-  .scramble-moves span.move-L { color:var(--green); }
-  .scramble-moves span.move-F { color:var(--red); }
-  .scramble-moves span.move-B { color:var(--orange); }
-
   .new-scramble-btn {
-    position:absolute; right:14px; top:50%; transform:translateY(-50%);
     width:26px; height:26px;
     border:1px solid var(--border);
     border-radius:4px;
@@ -181,8 +181,91 @@
     font-size:0.9rem;
     display:flex; align-items:center; justify-content:center;
     transition:all .2s;
+    flex-shrink:0;
   }
-  .new-scramble-btn:hover { color:var(--yellow); border-color:var(--yellow); transform:translateY(-50%) rotate(90deg); }
+  .new-scramble-btn:hover { color:var(--yellow); border-color:var(--yellow); transform:rotate(90deg); }
+
+  /* Stacked moves row */
+  .scramble-moves-row {
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+    margin-bottom:16px;
+    align-items:center;
+  }
+  .move-chip {
+    display:flex; flex-direction:column; align-items:center;
+    gap:2px;
+  }
+  .move-chip .move-face {
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.95rem; font-weight:700;
+    line-height:1;
+    min-width:22px; text-align:center;
+  }
+  .move-chip .move-mod {
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.62rem; font-weight:400;
+    line-height:1;
+    color:var(--muted);
+    min-height:10px; text-align:center;
+  }
+  .move-arrow {
+    font-size:0.55rem;
+    color:rgba(255,255,255,0.15);
+    align-self:center;
+    margin-bottom:10px;
+  }
+
+  /* ── Cube net ── */
+  .cube-net {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    margin-top:4px;
+  }
+  .net-row {
+    display:flex;
+    gap:2px;
+    align-items:flex-start;
+  }
+  .net-row > div {
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .net-label {
+    font-size:0.52rem; font-weight:700; letter-spacing:.1em;
+    color:var(--muted); text-align:center;
+    line-height:1; margin-bottom:1px;
+  }
+  .net-face {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1.5px;
+    width:66px; height:66px;
+    padding:2px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--border);
+    border-radius:3px;
+  }
+  .net-sticker {
+    border-radius:1.5px;
+  }
+
+  /* Face colors for move text */
+  .move-U { color:var(--yellow); }
+  .move-D { color:var(--white); }
+  .move-R { color:#6ba3f0; }
+  .move-L { color:var(--green); }
+  .move-F { color:var(--red); }
+  .move-B { color:var(--orange); }
+
+  @media(max-width:768px){
+    .net-face { width:52px; height:52px; }
+    .scramble-moves-row { gap:3px; }
+    .move-chip .move-face { font-size:0.82rem; }
+  }
+
 
   /* ── Timer ── */
   .timer-wrapper {
@@ -190,22 +273,7 @@
     position:relative;
   }
 
-  /* Mini 3x3 face visualizer above timer */
-  .cube-face-display {
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:3px;
-    width:54px; height:54px;
-    background:var(--surface2);
-    border:1px solid var(--border);
-    border-radius:4px;
-    padding:4px;
-    margin-bottom:4px;
-  }
-  .face-cell {
-    border-radius:2px;
-    transition:background 0.5s ease;
-  }
+  /* cube net display - see .cube-net-* classes */
 
   .timer-display {
     font-family:'JetBrains Mono',monospace;
@@ -395,14 +463,20 @@
   /* ── Mobile ── */
   .touch-zone {
     display:none; position:fixed;
-    bottom:0; left:0; right:0; height:45%; z-index:10; cursor:pointer;
+    inset:0; z-index:10; cursor:pointer;
+    /* transparent — just captures touches */
+    pointer-events:none;
   }
   @media(max-width:768px) {
     .app { grid-template-columns:1fr; grid-template-rows:auto auto 1fr; }
     .sidebar { border-left:none; border-top:1px solid var(--border); grid-row:3; }
     .main { min-height:50vh; padding:20px 16px; }
-    .touch-zone { display:block; }
-    .timer-hint { display:none; }
+    .touch-zone { display:block; pointer-events:auto; }
+    .timer-hint-mobile {
+      display:block !important;
+      font-size:0.6rem; letter-spacing:.15em; text-transform:uppercase;
+      color:var(--muted); text-align:center; margin-top:6px;
+    }
     .stats-grid { grid-template-columns:repeat(4,1fr); }
     .solves-panel { max-height:260px; }
   }
@@ -416,20 +490,16 @@
   <!-- Header -->
   <header class="header">
     <div class="logo">
-      <svg class="cube-logo" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-        <!-- 3D isometric cube made from 3 parallelograms -->
-        <!-- top face (white/yellow) -->
-        <polygon points="20,4 36,13 20,22 4,13" fill="#FFD500"/>
-        <!-- right face (blue) -->
-        <polygon points="20,22 36,13 36,31 20,40" fill="#003DA5"/>
-        <!-- left face (red) -->
-        <polygon points="20,22 4,13 4,31 20,40" fill="#C41E3A"/>
-        <!-- top face grid lines -->
-        <line x1="14.67" y1="10" x2="14.67" y2="19" stroke="#000" stroke-opacity=".2" stroke-width=".6"/>
-        <line x1="25.33" y1="10" x2="25.33" y2="19" stroke="#000" stroke-opacity=".2" stroke-width=".6"/>
-        <line x1="9.33" y1="11.67" x2="30.67" y2="11.67" stroke="#000" stroke-opacity=".2" stroke-width=".6"/>
-        <line x1="9.33" y1="17.33" x2="30.67" y2="17.33" stroke="#000" stroke-opacity=".2" stroke-width=".6"/>
-      </svg>
+      <div class="cube-logo-3d">
+        <div class="cube3d">
+          <div class="face3d top"></div>
+          <div class="face3d front"></div>
+          <div class="face3d right"></div>
+          <div class="face3d bottom"></div>
+          <div class="face3d back"></div>
+          <div class="face3d left"></div>
+        </div>
+      </div>
       CubeTimer
     </div>
     <div class="header-controls">
@@ -441,16 +511,42 @@
   <main class="main">
     <!-- Scramble -->
     <div class="scramble-box">
-      <div class="scramble-label">WCA Random-State Scramble</div>
-      <div class="scramble-text scramble-moves" id="scrambleText">Generiere...</div>
-      <button class="new-scramble-btn" id="newScrambleBtn" title="Neues Scramble">↻</button>
+      <div class="scramble-header">
+        <div class="scramble-label">WCA Random-State Scramble</div>
+        <button class="new-scramble-btn" id="newScrambleBtn" title="Neues Scramble">↻</button>
+      </div>
+      <!-- Stacked moves with arrows -->
+      <div class="scramble-moves-row" id="scrambleText">Generiere...</div>
+      <!-- 6-face cube net -->
+      <div class="cube-net" id="cubeNet">
+        <div class="net-label">U</div>
+        <div class="net-face" id="faceU"></div>
+        <div class="net-row">
+          <div>
+            <div class="net-label">L</div>
+            <div class="net-face" id="faceL"></div>
+          </div>
+          <div>
+            <div class="net-label">F</div>
+            <div class="net-face" id="faceF"></div>
+          </div>
+          <div>
+            <div class="net-label">R</div>
+            <div class="net-face" id="faceR"></div>
+          </div>
+          <div>
+            <div class="net-label">B</div>
+            <div class="net-face" id="faceB"></div>
+          </div>
+        </div>
+        <div class="net-label">D</div>
+        <div class="net-face" id="faceD"></div>
+      </div>
     </div>
 
     <!-- Timer -->
     <div class="timer-wrapper">
-      <div class="cube-face-display" id="cubeFaceDisplay">
-        <!-- 9 stickers, colors randomized per solve -->
-      </div>
+
       <div class="inspection-display" id="inspectionDisplay">15</div>
       <div class="timer-display" id="timerDisplay">0:00.00</div>
       <div class="timer-hint" id="timerHint">Leertaste halten zum Starten</div>
@@ -524,23 +620,123 @@ let scrambowReady = false;
 scrambowInstance.initialize && scrambowInstance.initialize(Math);
 scrambowReady = true;
 
-function renderScramble(moves) {
-  return moves.map(m => {
+
+
+
+// ─── Cube Simulator + Scramble Renderer ──────────────────────────────────────
+const FACE_COLORS = {
+  U:'#FFD500', D:'#F5F5F0', F:'#C41E3A', B:'#FF5800', R:'#003DA5', L:'#009B48'
+};
+
+function makeSolvedCube() {
+  const c = {};
+  for(const [k,v] of Object.entries(FACE_COLORS)) c[k] = Array(9).fill(v);
+  return c;
+}
+
+function rotateFaceCW(face) {
+  const f = face;
+  return [f[6],f[3],f[0], f[7],f[4],f[1], f[8],f[5],f[2]];
+}
+
+function applyMove(cube, move) {
+  const c = {
+    U:[...cube.U], D:[...cube.D], F:[...cube.F],
+    B:[...cube.B], R:[...cube.R], L:[...cube.L]
+  };
+  const face = move[0];
+  const mod = move.slice(1);
+  const times = mod==='' ? 1 : mod==="'" ? 3 : 2;
+  for(let t=0;t<times;t++) applyOnce(c, face);
+  return c;
+}
+
+function rotateFaceCWin(c, f) {
+  const old = [...c[f]];
+  c[f] = [old[6],old[3],old[0], old[7],old[4],old[1], old[8],old[5],old[2]];
+}
+
+function applyOnce(c, face) {
+  rotateFaceCWin(c, face);
+  let tmp;
+  if(face==='U') {
+    tmp=[c.F[0],c.F[1],c.F[2]];
+    c.F[0]=c.R[0]; c.F[1]=c.R[1]; c.F[2]=c.R[2];
+    c.R[0]=c.B[0]; c.R[1]=c.B[1]; c.R[2]=c.B[2];
+    c.B[0]=c.L[0]; c.B[1]=c.L[1]; c.B[2]=c.L[2];
+    c.L[0]=tmp[0]; c.L[1]=tmp[1]; c.L[2]=tmp[2];
+  } else if(face==='D') {
+    tmp=[c.F[6],c.F[7],c.F[8]];
+    c.F[6]=c.L[6]; c.F[7]=c.L[7]; c.F[8]=c.L[8];
+    c.L[6]=c.B[6]; c.L[7]=c.B[7]; c.L[8]=c.B[8];
+    c.B[6]=c.R[6]; c.B[7]=c.R[7]; c.B[8]=c.R[8];
+    c.R[6]=tmp[0]; c.R[7]=tmp[1]; c.R[8]=tmp[2];
+  } else if(face==='F') {
+    tmp=[c.U[6],c.U[7],c.U[8]];
+    c.U[6]=c.L[8]; c.U[7]=c.L[5]; c.U[8]=c.L[2];
+    c.L[2]=c.D[0]; c.L[5]=c.D[1]; c.L[8]=c.D[2];
+    c.D[0]=c.R[6]; c.D[1]=c.R[3]; c.D[2]=c.R[0];
+    c.R[0]=tmp[0]; c.R[3]=tmp[1]; c.R[6]=tmp[2];
+  } else if(face==='B') {
+    tmp=[c.U[0],c.U[1],c.U[2]];
+    c.U[0]=c.R[2]; c.U[1]=c.R[5]; c.U[2]=c.R[8];
+    c.R[2]=c.D[8]; c.R[5]=c.D[7]; c.R[8]=c.D[6];
+    c.D[6]=c.L[0]; c.D[7]=c.L[3]; c.D[8]=c.L[6];
+    c.L[0]=tmp[2]; c.L[3]=tmp[1]; c.L[6]=tmp[0];
+  } else if(face==='R') {
+    tmp=[c.U[2],c.U[5],c.U[8]];
+    c.U[2]=c.F[2]; c.U[5]=c.F[5]; c.U[8]=c.F[8];
+    c.F[2]=c.D[2]; c.F[5]=c.D[5]; c.F[8]=c.D[8];
+    c.D[2]=c.B[6]; c.D[5]=c.B[3]; c.D[8]=c.B[0];
+    c.B[0]=tmp[2]; c.B[3]=tmp[1]; c.B[6]=tmp[0];
+  } else if(face==='L') {
+    tmp=[c.U[0],c.U[3],c.U[6]];
+    c.U[0]=c.B[8]; c.U[3]=c.B[5]; c.U[6]=c.B[2];
+    c.B[2]=c.D[6]; c.B[5]=c.D[3]; c.B[8]=c.D[0];
+    c.D[0]=c.F[0]; c.D[3]=c.F[3]; c.D[6]=c.F[6];
+    c.F[0]=tmp[0]; c.F[3]=tmp[1]; c.F[6]=tmp[2];
+  }
+}
+
+function renderCubeNet(cube) {
+  const faces = ['U','D','F','B','R','L'];
+  for(const f of faces) {
+    const el = document.getElementById('face'+f);
+    if(!el) continue;
+    el.innerHTML = cube[f].map(color =>
+      `<div class="net-sticker" style="background:${color}"></div>`
+    ).join('');
+  }
+}
+
+function renderScrambleMoves(moves) {
+  const el = document.getElementById('scrambleText');
+  if(!el) return;
+  const chips = moves.map((m,i) => {
     const face = m[0];
-    return `<span class="move-${face}">${m}</span>`;
-  }).join(' ');
+    const mod = m.slice(1);
+    let modHtml = '&nbsp;';
+    if(mod==="'") modHtml = '&#x27;';
+    else if(mod==='2') modHtml = '2';
+    const arrow = i < moves.length-1
+      ? '<span class="move-arrow">&#x276F;</span>' : '';
+    return `<div class="move-chip"><span class="move-face move-${face}">${face}</span><span class="move-mod">${modHtml}</span></div>${arrow}`;
+  }).join('');
+  el.innerHTML = chips;
 }
 
 function newScramble() {
-  const el = document.getElementById('scrambleText');
   try {
     const result = scrambowInstance.get(1)[0];
     const moveStr = result.scramble_string.trim();
     const moves = moveStr.split(/\s+/);
-    el.innerHTML = renderScramble(moves);
-    randomizeCubeFace();
+    renderScrambleMoves(moves);
+    let cube = makeSolvedCube();
+    for(const m of moves) cube = applyMove(cube, m);
+    renderCubeNet(cube);
   } catch(e) {
-    el.textContent = 'Scramble-Fehler: ' + e.message;
+    const el = document.getElementById('scrambleText');
+    if(el) el.textContent = 'Fehler: '+e.message;
   }
 }
 
@@ -644,6 +840,8 @@ function spawnRipple() {
   setTimeout(() => r.remove(), 600);
 }
 
+function isMobile() { return window.matchMedia("(max-width: 768px)").matches; }
+
 // ─── Timer control ────────────────────────────────────────────────────────────
 function startHold() {
   if (timerState === 'running') {
@@ -654,7 +852,7 @@ function startHold() {
   timerState = 'holding';
   holdDuration = 0;
   timerDisplay.classList.add('holding');
-  timerHint.textContent = 'Loslassen zum Starten...';
+  timerHint.textContent = isMobile() ? 'Loslassen...' : 'Loslassen zum Starten...';
   holdTimer = setTimeout(() => {
     if (timerState === 'holding') {
       timerState = 'ready';
@@ -676,7 +874,7 @@ function releaseHold() {
   } else if (timerState === 'holding') {
     timerState = 'idle';
     timerDisplay.classList.remove('holding');
-    timerHint.textContent = 'Leertaste halten zum Starten';
+    timerHint.textContent = isMobile() ? 'Tippen und halten' : 'Leertaste halten zum Starten';
   }
 }
 
@@ -708,7 +906,7 @@ function startTimer() {
   timerState = 'running';
   startTime = Date.now();
   timerDisplay.classList.add('running');
-  timerHint.textContent = 'Leertaste zum Stoppen';
+  timerHint.textContent = isMobile() ? 'Tippen zum Stoppen' : 'Leertaste zum Stoppen';
   rafId = requestAnimationFrame(tick);
 }
 
@@ -721,7 +919,7 @@ function stopTimer() {
 
   timerDisplay.classList.remove('running');
   timerDisplay.textContent = fmt(elapsed);
-  timerHint.textContent = 'Leertaste halten zum Starten';
+  timerHint.textContent = isMobile() ? 'Tippen und halten' : 'Leertaste halten zum Starten';
   inspectionDisp.style.display = 'none';
   timerDisplay.style.display = '';
 
@@ -756,11 +954,18 @@ document.addEventListener('keyup', e => {
   releaseHold();
 });
 
-// ─── Touch ────────────────────────────────────────────────────────────────────
+// ─── Touch (improved) ────────────────────────────────────────────────────────
 let touchActive = false;
+let touchId = null;
+
 function handleTouchStart(e) {
-  e.preventDefault();
+  // Only track first touch, ignore multi-touch
+  if (touchActive) return;
+  const t = e.changedTouches[0];
+  touchId = t.identifier;
   touchActive = true;
+  e.preventDefault();
+
   if (timerState === 'inspection') {
     clearInterval(inspectionTimer);
     endInspection();
@@ -768,20 +973,37 @@ function handleTouchStart(e) {
   }
   startHold();
 }
+
 function handleTouchEnd(e) {
-  e.preventDefault();
-  if (!touchActive) return;
+  // Make sure it's our tracked touch
+  const touches = Array.from(e.changedTouches);
+  if (!touches.find(t => t.identifier === touchId)) return;
   touchActive = false;
+  touchId = null;
+  e.preventDefault();
   releaseHold();
 }
 
+function handleTouchCancel(e) {
+  touchActive = false;
+  touchId = null;
+  // Cancel hold if mid-hold
+  if (timerState === 'holding' || timerState === 'ready') {
+    clearTimeout(holdTimer);
+    timerDisplay.classList.remove('holding','ready');
+    timerState = 'idle';
+    timerHint.textContent = 'Tippen und halten zum Starten';
+  }
+}
+
+// Attach to touchZone (full-screen on mobile via CSS)
 touchZone.addEventListener('touchstart', handleTouchStart, { passive: false });
 touchZone.addEventListener('touchend', handleTouchEnd, { passive: false });
+touchZone.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 
-// Also listen on main area for desktop touch
+// Also whole document for desktop usage (clicking timer area)
 document.querySelector('.main').addEventListener('mousedown', e => {
   if (e.target.closest('button')) return;
-  if (window.matchMedia('(max-width: 768px)').matches) return;
 });
 
 // ─── UI Controls ──────────────────────────────────────────────────────────────
@@ -801,19 +1023,9 @@ clearBtn.addEventListener('click', () => {
 });
 
 
-// ─── Cube Face Display ────────────────────────────────────────────────────────
-const CUBE_COLORS = ['#C41E3A','#FF5800','#FFD500','#F5F5F0','#003DA5','#009B48'];
-function randomizeCubeFace() {
-  const el = document.getElementById('cubeFaceDisplay');
-  if (!el) return;
-  el.innerHTML = Array.from({length:9}, () => {
-    const c = CUBE_COLORS[Math.floor(Math.random()*6)];
-    return `<div class="face-cell" style="background:${c}"></div>`;
-  }).join('');
-}
-
 // ─── Init ─────────────────────────────────────────────────────────────────────
-randomizeCubeFace();
+// Init cube net with solved state
+renderCubeNet(makeSolvedCube());
 newScramble();
 updateStats();
 </script>
